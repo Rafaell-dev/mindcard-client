@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Button } from "@/app/components/ui/button";
+import { cn } from "@/app/lib/utils";
 
 type HomeHeaderProps = {
   userName?: string;

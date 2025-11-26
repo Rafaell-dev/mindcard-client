@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/app/lib/utils";
 import { QuestionCardOpen } from "./question-card-open";
 import { QuestionCardMultiple } from "./question-card-multiple";
 import { QuestionCardAlternative } from "./question-card-alternative";

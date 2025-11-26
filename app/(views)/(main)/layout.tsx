@@ -1,4 +1,5 @@
-import { FloatingNavbar } from "@/components/common/floating-navbar";
+
+import { FloatingNavbar } from "@/app/components/common/floating-navbar";
 import type { ReactNode } from "react";
 
 export default function MindcardLayout({
@@ -7,9 +8,9 @@ export default function MindcardLayout({
   children: ReactNode;
 }) {
   return (
-    <main className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen">
       {children}
       <FloatingNavbar />
-    </main>
+    </div>
   );
 }

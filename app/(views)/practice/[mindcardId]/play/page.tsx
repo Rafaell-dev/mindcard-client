@@ -2,9 +2,9 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { QuestionCard } from "@/components/practice/question-cards/question-card";
-import { cn } from "@/lib/utils";
+import { Button } from "@/app/components/ui/button";
+import { QuestionCard } from "@/app/components/practice/question-cards/question-card";
+import { cn } from "@/app/lib/utils";
 import { X } from "lucide-react";
 import Image from "next/image";
 

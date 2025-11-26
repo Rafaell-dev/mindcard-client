@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geologica, Roboto, Geist_Mono } from "next/font/google";
-import "@/styles/globals.css";
-import { FloatingNavbar } from "./components/common/floating-navbar";
+import "@/app/styles/globals.css";
+import { Toaster } from "sonner";
 
 const geologica = Geologica({
   variable: "--font-geologica",
@@ -40,9 +40,10 @@ export default function RootLayout({
       className={`${roboto.variable} ${geologica.variable} ${geistMono.variable}`}
     >
       <body className="font-sans antialiased max-w-4xl mx-auto bg-background">
-        <div className="h-full">
+        <main className="h-full">
           {children}
-        </div>
+          <Toaster />
+        </main>
       </body>
     </html>
   );

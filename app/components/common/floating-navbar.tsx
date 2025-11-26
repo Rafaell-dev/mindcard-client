@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { HomeIcon, Plus, User } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/app/lib/utils";
 import { Button } from "../ui/button";
 
 type NavId = "home" | "action" | "profile";

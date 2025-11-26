@@ -1,7 +1,7 @@
 import Image from "next/image";
 
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Button } from "@/app/components/ui/button";
+import { cn } from "@/app/lib/utils";
 
 type ProgressTrackerProps = {
   streakCount?: number;
