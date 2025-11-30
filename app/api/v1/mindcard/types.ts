@@ -1,13 +1,24 @@
 import { MindcardItem } from "../mindcard-item/types";
 
-export type CreateMindcardResponse = {
+export type MindcardResponse = {
   success: boolean;
   message: string;
   data: {
-    mindcardId: string;
-    jobId: string;
-    status: string;
+    id: string;
+    titulo?: string;
+    fonteArquivo?: string;
+    status: "PENDENTE" | "PROCESSANDO" | "CONCLUIDO" | "ERRO";
+    promptPersonalizado?: string;
+    usuarioId: string;
+    dataCriacao?: string;
   };
+};
+
+export type MindcardRequest = {
+  id: string;
+  titulo: string;
+  fonteArquivo: string;
+  promptPersonalizado: string;
 };
 
 export type Mindcard = {

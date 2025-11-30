@@ -5,7 +5,10 @@ type FetchOptions = Omit<RequestInit, "body"> & {
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
-function buildUrl(path: string, query?: Record<string, string | number | boolean>) {
+function buildUrl(
+  path: string,
+  query?: Record<string, string | number | boolean>
+) {
   const url = new URL(`${BASE_URL}/${path}`);
 
   if (query) {
@@ -17,7 +20,10 @@ function buildUrl(path: string, query?: Record<string, string | number | boolean
   return url.toString();
 }
 
-async function apiFetch<T>(path: string, options: FetchOptions = {}): Promise<T> {
+async function apiFetch<T>(
+  path: string,
+  options: FetchOptions = {}
+): Promise<T> {
   const { body, query, ...rest } = options;
 
   const headers: Record<string, string> = { Accept: "application/json" };
@@ -73,8 +79,7 @@ export const api = {
   patch: <T>(path: string, body?: unknown) =>
     apiFetch<T>(path, { method: "PATCH", body }),
 
-  del: <T>(path: string) =>
-    apiFetch<T>(path, { method: "DELETE" }),
+  del: <T>(path: string) => apiFetch<T>(path, { method: "DELETE" }),
 
   baseUrl: BASE_URL,
 };

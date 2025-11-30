@@ -2,12 +2,13 @@
 
 import { cache } from "react";
 import api from "../..";
-import { Mindcard } from "./types";
-import { CreateMindcardResponse } from "./types";
+import { Mindcard, MindcardResponse } from "./types";
 
 export const getMindcardsByUserId = cache(async (userId: string) => {
   try {
-    const mindcards = await api.get<Mindcard[]>(`mindcard/listar_por_usuario/${userId}`);
+    const mindcards = await api.get<Mindcard[]>(
+      `mindcard/listar_por_usuario/${userId}`
+    );
     return mindcards;
   } catch (error) {
     console.error("Failed to fetch mindcards:", error);
@@ -37,10 +38,26 @@ export const createMindcard = async (formData: FormData) => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data: CreateMindcardResponse = await response.json();
+    const data: MindcardResponse = await response.json();
     return data;
   } catch (error) {
     console.error("Failed to create mindcard:", error);
+    throw error;
+  }
+};
+
+export const updateMindcard = async (
+  mindcardId: string,
+  formData: FormData
+) => {
+  try {
+    const data = await api.patch<MindcardResponse>(
+      `mindcard/atualizar/${mindcardId}`,
+      formData
+    );
+    return data;
+  } catch (error) {
+    console.error("Failed to update mindcard:", error);
     throw error;
   }
 };

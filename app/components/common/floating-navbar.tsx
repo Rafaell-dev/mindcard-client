@@ -24,18 +24,24 @@ type NavItem = {
 };
 
 const NAV_ITEMS: NavItem[] = [
+  // {
+  //   id: "home",
+  //   icon: <HomeIcon className="size-6" />,
+  //   label: "Início",
+  //   path: "/",
+  // },
   {
     id: "home",
     icon: <HomeIcon className="size-6" />,
     label: "Início",
-    path: "/",
-  },
-  {
-    id: "action",
-    icon: <Plus className="size-6" />,
-    label: "Criar",
     path: "/mindcards",
   },
+  // {
+  //   id: "action",
+  //   icon: <Plus className="size-6" />,
+  //   label: "Criar",
+  //   path: "/mindcards",
+  // },
   {
     id: "profile",
     icon: <User className="size-6" />,
