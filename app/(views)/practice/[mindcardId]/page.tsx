@@ -43,7 +43,7 @@ export default function MindcardPage({ params }: MindcardPageProps) {
   // State
   const [prompt, setPrompt] = useState("");
   const [selectedCardTypes, setSelectedCardTypes] = useState<string[]>([
-    "ABERTA",
+    // "ABERTA",
     "ALTERNATIVA",
     "MULTIPLA_ESCOLHA",
   ]);
@@ -187,7 +187,9 @@ export default function MindcardPage({ params }: MindcardPageProps) {
               aria-label={`Selecionar ${label}`}
               className={cn(
                 "w-full cursor-pointer rounded-full px-5 py-3 text-sm font-medium transition-all h-14",
-                selectedCardTypes.includes(type) ? "input-border bg-background" : "border border-2 border-dashed bg-background"
+                selectedCardTypes.includes(type)
+                  ? "input-border bg-background"
+                  : "border border-2 border-dashed bg-background"
               )}
             >
               <span className="flex items-center justify-center gap-2">

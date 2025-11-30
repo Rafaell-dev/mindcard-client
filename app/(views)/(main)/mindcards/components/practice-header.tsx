@@ -2,7 +2,15 @@ import { Button } from "@/app/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 
-export function PracticeHeader() {
+interface PracticeHeaderProps {
+  searchQuery: string;
+  onSearchChange: (value: string) => void;
+}
+
+export function PracticeHeader({
+  searchQuery,
+  onSearchChange,
+}: PracticeHeaderProps) {
   return (
     <header className="flex flex-col gap-6">
       <div className="flex items-center gap-3">
@@ -21,8 +29,15 @@ export function PracticeHeader() {
               type="text"
               placeholder="Pesquisar"
               className="flex-1 focus-visible:outline-none"
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
             />
-            <Image src="/icons/search.svg" alt="Search" width={18} height={18} />
+            <Image
+              src="/icons/search.svg"
+              alt="Search"
+              width={18}
+              height={18}
+            />
           </label>
         </div>
         <div className="col-span-12 md:col-span-4 flex items-center gap-4">

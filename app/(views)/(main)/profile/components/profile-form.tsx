@@ -5,7 +5,7 @@ import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { cn } from "@/app/lib/utils";
-import type { User } from "@/types/user";
+import type { User } from "@/app/api/v1/user/types";
 import { toast } from "sonner";
 import { updateUser } from "@/app/api/v1/user/route";
 import { UniversitySearch } from "./university-search";
@@ -117,7 +117,7 @@ export function ProfileForm({ user, userId }: ProfileFormProps) {
         />
       </div>
 
-      <div className="space-y-2">
+      {/* <div className="space-y-2">
         <Label htmlFor="idioma" className="text-base font-bold">
           Idioma
         </Label>
@@ -138,12 +138,11 @@ export function ProfileForm({ user, userId }: ProfileFormProps) {
             <option value="en-US">Inglês (EN-US)</option>
             <option value="es-ES">Espanhol (ES-ES)</option>
           </select>
-          {/* Caret */}
           <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-foreground/70">
             ▾
           </span>
         </div>
-      </div>
+      </div> */}
 
       <div className="pt-2">
         <Button

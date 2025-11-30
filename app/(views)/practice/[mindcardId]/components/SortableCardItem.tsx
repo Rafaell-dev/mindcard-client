@@ -46,12 +46,12 @@ export function SortableCardItem({ card }: SortableCardItemProps) {
       <Label className="flex-1 text-sm font-bold text-foreground">
         {card.titulo}
       </Label>
-      <Image
+      {/* <Image
         src="/icons/menu2.svg"
         alt="Grip Vertical"
         width={16}
         height={16}
-      />
+      /> */}
     </li>
   );
 }

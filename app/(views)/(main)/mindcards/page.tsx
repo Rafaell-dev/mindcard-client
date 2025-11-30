@@ -1,13 +1,12 @@
+"use client";
+
 import { Bot, PenSquare, Rocket, Sparkle } from "lucide-react";
 import Link from "next/link";
+import { use, useState, useMemo, useEffect } from "react";
 
 import { MindcardCard } from "./components/mindcard-card";
 import { PracticeHeader } from "./components/practice-header";
-import {
-  getMindcardById,
-  getMindcardsByUserId,
-} from "@/app/api/v1/mindcard/route";
-import { Button } from "@/app/components/ui/button";
+import { getMindcardsByUserId } from "@/app/api/v1/mindcard/route";
 
 const accentGreen = (
   <svg viewBox="0 0 160 180" className="h-full w-full" aria-hidden>
@@ -91,64 +90,83 @@ type PracticePageProps = {
   searchParams: Promise<{ userId?: string }>;
 };
 
-export default async function Practice({ searchParams }: PracticePageProps) {
-  const params = await searchParams;
+export default function Practice({ searchParams }: PracticePageProps) {
+  const params = use(searchParams);
   const userId = params.userId || "a15f6a4e-3f83-4aec-88e5-b953a758cd0b";
-  const mindcardsData = await getMindcardsByUserId(userId);
 
-  // Map API data to UI model
-  const mindcards = mindcardsData.map((card, index) => {
-    const theme = THEMES[index % THEMES.length];
-    const Icon = theme.icon;
+  // State for search
+  const [searchQuery, setSearchQuery] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [mindcardsData, setMindcardsData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-    // Mocking progress/difficulty if missing from API for now
-    const progress = card.progresso ?? Math.floor(Math.random() * 100);
-    const totalCards = card.totalCards ?? 20;
-    const difficulty = card.dificuldade ?? "Médio";
-    const streakCount = card.sequencia ?? 0;
+  // Load mindcards on mount
+  useEffect(() => {
+    getMindcardsByUserId(userId).then((data) => {
+      setMindcardsData(data);
+      setLoading(false);
+    });
+  }, [userId]);
 
-    return {
-      id: card.id,
-      title: card.titulo,
-      difficulty,
-      difficultyColor: theme.color,
-      progressLabel: `${progress}% feito`,
-      cardsLabel: `${totalCards} cards`,
-      progress,
-      streakCount,
-      icon: <Icon className="size-6" strokeWidth={2.3} />,
-      backgroundClassName: theme.bg,
-      accentElement: theme.accent,
-    };
-  });
+  // Map API data to UI model and apply filters
+  const mindcards = useMemo(() => {
+    // Map data
+    const mapped = mindcardsData.map((card, index) => {
+      const theme = THEMES[index % THEMES.length];
+      const Icon = theme.icon;
 
-  const lastMindcard = mindcards.length > 0 ? mindcards[0] : null;
-  const otherMindcards = mindcards.length > 0 ? mindcards.slice(1) : [];
+      // Mocking progress/difficulty if missing from API for now
+      const progress = card.progresso ?? Math.floor(Math.random() * 100);
+      const totalCards = card.totalCards ?? 20;
+      const difficulty = card.dificuldade ?? "Médio";
+      const streakCount = card.sequencia ?? 0;
+
+      return {
+        id: card.id,
+        title: card.titulo,
+        difficulty,
+        difficultyColor: theme.color,
+        progressLabel: `${progress}% feito`,
+        cardsLabel: `${totalCards} cards`,
+        progress,
+        streakCount,
+        icon: <Icon className="size-6" strokeWidth={2.3} />,
+        backgroundClassName: theme.bg,
+        accentElement: theme.accent,
+      };
+    });
+
+    // Filter by search query (client-side)
+    const filtered = searchQuery
+      ? mapped.filter((card) =>
+          card.title.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      : mapped;
+
+    // Sort alphabetically by title
+    return filtered.sort((a, b) => a.title.localeCompare(b.title));
+  }, [mindcardsData, searchQuery]);
+
+  if (loading) {
+    return (
+      <div className="mx-auto flex min-h-screen items-center justify-center">
+        <p className="text-lg text-muted-foreground">Carregando mindcards...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto flex flex-col w-full gap-10 px-4 pb-24 pt-8 sm:px-6 lg:px-8">
-      <PracticeHeader />
+      <PracticeHeader
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+      />
 
-      {lastMindcard && (
-        <section className="space-y-4">
-          <h2 className="text-lg font-bold text-jet-black">
-            Último mindcard feito
-          </h2>
-          <Link
-            href={`/practice/${encodeURIComponent(lastMindcard.id)}`}
-            aria-label={`Abrir ${lastMindcard.title}`}
-            className="block"
-          >
-            <MindcardCard {...lastMindcard} />
-          </Link>
-        </section>
-      )}
-
-      {otherMindcards.length > 0 && (
+      {mindcards.length > 0 ? (
         <section className="space-y-4">
           <h2 className="text-lg font-bold text-jet-black">Seus mindcards</h2>
           <div className="flex flex-col gap-4">
-            {otherMindcards.map((card) => (
+            {mindcards.map((card) => (
               <Link
                 key={card.id}
                 href={`/practice/${encodeURIComponent(card.id)}`}
@@ -160,6 +178,14 @@ export default async function Practice({ searchParams }: PracticePageProps) {
             ))}
           </div>
         </section>
+      ) : (
+        <div className="flex flex-col items-center justify-center py-12">
+          <p className="text-center text-muted-foreground">
+            {searchQuery
+              ? "Nenhum mindcard encontrado com esse nome"
+              : "Nenhum mindcard disponível"}
+          </p>
+        </div>
       )}
     </div>
   );

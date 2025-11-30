@@ -54,21 +54,21 @@ export function MindcardCard({
           <div className="space-y-1 flex w-full justify-between">
             <h3 className="text-lg font-bold">{title}</h3>
             <div className="flex items-center gap-3 text-sm font-light text-jet-black">
-              <span
+              {/* <span
                 className="rounded-full px-3 py-1"
                 style={{ backgroundColor: difficultyColor }}
               >
                 <h2>{difficulty}</h2>
-              </span>
-              <span className="flex items-center gap-1 rounded-full px-3 py-1" style={{ backgroundColor: difficultyColor }}>
+              </span> */}
+              {/* <span className="flex items-center gap-1 rounded-full px-3 py-1" style={{ backgroundColor: difficultyColor }}>
                 <h2>{streakCount}</h2> <Image src="/icons/flame_black.svg" alt="Flame" width={16} height={16} />
-              </span>
+              </span> */}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="relative z-10 mt-4 space-y-2">
+      {/* <div className="relative z-10 mt-4 space-y-2">
         <h2 className="text-2xl font-bold">
           {progressLabel} <span className="text-sm">de {cardsLabel}</span>
         </h2>
@@ -80,7 +80,7 @@ export function MindcardCard({
             }}
           />
         </div>
-      </div>
+      </div> */}
     </article>
   );
 }

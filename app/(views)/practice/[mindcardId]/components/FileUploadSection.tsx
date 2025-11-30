@@ -46,7 +46,7 @@ export function FileUploadSection({
         onChange={onFileChange}
       />
       <div
-        className="flex justify-between gap-3 rounded-2xl input-border bg-white px-4 py-3 w-full cursor-pointer hover:bg-gray-50 transition-colors"
+        className="flex justify-between gap-3 rounded-2xl input-border bg-white h-14 px-4 py-3 w-full cursor-pointer hover:bg-gray-50 transition-colors"
         onClick={onFilePicker}
       >
         <div className="flex flex-1 items-center gap-3">
@@ -69,7 +69,7 @@ export function FileUploadSection({
             )}
           </div>
         </div>
-        {hasFile && (
+        {/* {hasFile && (
           <Button
             type="button"
             variant="ghost"
@@ -88,7 +88,7 @@ export function FileUploadSection({
               height={16}
             />
           </Button>
-        )}
+        )} */}
       </div>
     </section>
   );
