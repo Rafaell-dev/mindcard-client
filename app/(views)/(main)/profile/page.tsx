@@ -27,11 +27,11 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
           <div className="flex items-center gap-2">
             <div className="relative flex size-16 shrink-0 items-center justify-center rounded-full ring-4 ring-background/40">
               <Image
-                src="/avatars/avatar_1.svg"
+                src="/avatars/avatar.png"
                 alt="Avatar"
                 className="rounded-full"
-                width={128}
-                height={128}
+                width={24}
+                height={24}
               />
             </div>
             <div className="flex flex-col">
