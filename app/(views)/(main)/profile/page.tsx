@@ -8,14 +8,14 @@ type ProfilePageProps = {
 
 export default async function ProfilePage({ searchParams }: ProfilePageProps) {
   const params = await searchParams;
-  const userId = params.userId || "a15f6a4e-3f83-4aec-88e5-b953a758cd0b";
+  const userId = params.userId || "ff9ff165-557f-427f-8c5b-aa1e52453003";
 
   const user = await getUser(userId);
 
   const userName = user?.nome.split(" ")[0] || "Usuário";
   const userHandle = user?.email.split("@")[0] || "user";
-  const memberSince = user?.dataRegistro 
-    ? new Date(user.dataRegistro).getFullYear() 
+  const memberSince = user?.dataRegistro
+    ? new Date(user.dataRegistro).getFullYear()
     : new Date().getFullYear();
 
   return (
@@ -27,11 +27,11 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
           <div className="flex items-center gap-2">
             <div className="relative flex size-16 shrink-0 items-center justify-center rounded-full ring-4 ring-background/40">
               <Image
-                src="/avatars/avatar.png"
+                src="/avatars/avatar.svg"
                 alt="Avatar"
                 className="rounded-full"
-                width={24}
-                height={24}
+                width={32}
+                height={32}
               />
             </div>
             <div className="flex flex-col">

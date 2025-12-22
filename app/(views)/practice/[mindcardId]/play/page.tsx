@@ -9,6 +9,7 @@ import { X } from "lucide-react";
 import Image from "next/image";
 import { getMindcardItemsByMindcardId } from "@/app/api/v1/mindcard-item/route";
 import type { MindcardItem } from "@/app/api/v1/mindcard-item/types";
+import { PracticeResults } from "./components/practice-results";
 
 export default function PracticePlayPage({
   params,
@@ -26,12 +27,20 @@ export default function PracticePlayPage({
   const [answer, setAnswer] = React.useState("");
   const [revealed, setRevealed] = React.useState(false);
 
+  // Metrics tracking
+  const [correctAnswers, setCorrectAnswers] = React.useState(0);
+  const [skippedQuestions, setSkippedQuestions] = React.useState(0);
+  const [showResults, setShowResults] = React.useState(false);
+
   // Timer
   const [seconds, setSeconds] = React.useState(0);
   React.useEffect(() => {
+    // Don't run timer if showing results
+    if (showResults) return;
+
     const id = setInterval(() => setSeconds((s) => s + 1), 1000);
     return () => clearInterval(id);
-  }, []);
+  }, [showResults]);
 
   // Load cards
   React.useEffect(() => {
@@ -72,10 +81,18 @@ export default function PracticePlayPage({
     setRevealed(true);
   };
 
+  const handleMarkCorrect = () => {
+    setCorrectAnswers((prev) => prev + 1);
+    handleNext();
+  };
+
+  const handleMarkIncorrect = () => {
+    handleNext();
+  };
+
   const handleNext = () => {
     if (isLastCard) {
-      // TODO: Show completion screen or go back
-      router.back();
+      setShowResults(true);
     } else {
       setCurrentCardIndex((prev) => prev + 1);
       setAnswer("");
@@ -84,7 +101,26 @@ export default function PracticePlayPage({
   };
 
   const handleDontKnow = () => {
-    setRevealed(true);
+    setSkippedQuestions((prev) => prev + 1);
+
+    // Go directly to next question or show results
+    if (isLastCard) {
+      setShowResults(true);
+    } else {
+      setCurrentCardIndex((prev) => prev + 1);
+      setAnswer("");
+      setRevealed(false);
+    }
+  };
+
+  const handleRestart = () => {
+    setCurrentCardIndex(0);
+    setAnswer("");
+    setRevealed(false);
+    setCorrectAnswers(0);
+    setSkippedQuestions(0);
+    setShowResults(false);
+    setSeconds(0);
   };
 
   const close = () => router.back();
@@ -100,6 +136,20 @@ export default function PracticePlayPage({
     }
     return [];
   };
+
+  // Results state
+  if (showResults) {
+    return (
+      <PracticeResults
+        totalCards={cards.length}
+        correctAnswers={correctAnswers}
+        skippedQuestions={skippedQuestions}
+        timeSpent={seconds}
+        onClose={close}
+        onRestart={handleRestart}
+      />
+    );
+  }
 
   // Loading state
   if (loading) {
@@ -179,27 +229,50 @@ export default function PracticePlayPage({
 
       <div className="pointer-events-none fixed inset-x-0 bottom-0 bg-gradient-to-t from-background via-background/95 to-transparent pb-6 pt-16">
         <div className="space-y-4 pointer-events-auto mx-auto w-full max-w-md px-4 sm:px-6">
-          <Button
-            onClick={revealed ? handleNext : handleVerify}
-            className="w-full rounded-full primary-border"
-            size="lg"
-            disabled={!revealed && answer.trim().length < 3}
-          >
-            {revealed
-              ? isLastCard
-                ? "Finalizar"
-                : "Próximo card"
-              : "Verificar"}
-          </Button>
-          <Button
-            type="button"
-            onClick={handleDontKnow}
-            className="w-full text-foreground font-bold secondary-border"
-            size="lg"
-            disabled={revealed}
-          >
-            Não sei
-          </Button>
+          {revealed ? (
+            <>
+              <div className="grid grid-cols-2 gap-3">
+                <Button
+                  onClick={handleMarkCorrect}
+                  className="w-full rounded-full bg-green-600 hover:bg-green-700 text-white"
+                  size="lg"
+                >
+                  ✅ Acertei
+                </Button>
+                <Button
+                  onClick={handleMarkIncorrect}
+                  className="w-full rounded-full bg-red-600 hover:bg-red-700 text-white"
+                  size="lg"
+                >
+                  ❌ Errei
+                </Button>
+              </div>
+              <p className="text-center text-sm text-muted-foreground">
+                {isLastCard
+                  ? "Avalie sua resposta para finalizar"
+                  : "Avalie sua resposta para continuar"}
+              </p>
+            </>
+          ) : (
+            <>
+              <Button
+                onClick={handleVerify}
+                className="w-full rounded-full primary-border"
+                size="lg"
+                disabled={answer.trim().length < 3}
+              >
+                Verificar
+              </Button>
+              <Button
+                type="button"
+                onClick={handleDontKnow}
+                className="w-full text-foreground font-bold secondary-border rounded-full"
+                size="lg"
+              >
+                Pular
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </div>

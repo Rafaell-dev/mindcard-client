@@ -1,8 +1,8 @@
 "use server";
 import { cache } from "react";
-import api from "../..";
 import { User } from "./types";
 import { revalidatePath } from "next/cache";
+import api from "../../index";
 
 export const getUser = cache(async (userId: string) => {
   const user = await api.get<User>(`usuario/listar/${userId}`);

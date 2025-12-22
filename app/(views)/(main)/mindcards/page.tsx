@@ -92,7 +92,7 @@ type PracticePageProps = {
 
 export default function Practice({ searchParams }: PracticePageProps) {
   const params = use(searchParams);
-  const userId = params.userId || "a15f6a4e-3f83-4aec-88e5-b953a758cd0b";
+  const userId = params.userId || "ff9ff165-557f-427f-8c5b-aa1e52453003";
 
   // State for search
   const [searchQuery, setSearchQuery] = useState("");

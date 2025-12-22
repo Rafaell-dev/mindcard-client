@@ -38,7 +38,7 @@ export default function MindcardPage({ params }: MindcardPageProps) {
   const mindcardId = resolvedParams.mindcardId;
 
   // TODO: Get from auth context
-  const userId = "a15f6a4e-3f83-4aec-88e5-b953a758cd0b";
+  const userId = "ff9ff165-557f-427f-8c5b-aa1e52453003";
 
   // State
   const [prompt, setPrompt] = useState("");
@@ -130,7 +130,15 @@ export default function MindcardPage({ params }: MindcardPageProps) {
 
   const handleTitleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      if (editedTitle !== title) {
+      const trimmedTitle = editedTitle.trim();
+
+      if (!trimmedTitle) {
+        toast.error("O título não pode ficar em branco");
+        setEditedTitle(title);
+        return;
+      }
+
+      if (trimmedTitle !== title) {
         setShowSaveModal(true);
       } else {
         cancelEdit();

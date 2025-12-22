@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 interface UseEditableTitleProps {
   initialTitle: string;
@@ -52,8 +53,19 @@ export function useEditableTitle({
   };
 
   const saveEdit = async () => {
+    // Validate title is not empty or whitespace only
+    const trimmedTitle = editedTitle.trim();
+
+    if (!trimmedTitle) {
+      toast.error("O título não pode ficar em branco");
+      setEditedTitle(originalTitle);
+      setIsEditing(false);
+      setShowSaveModal(false);
+      return;
+    }
+
     setShowSaveModal(false);
-    await onSave(editedTitle);
+    await onSave(trimmedTitle);
     setIsEditing(false);
   };
 
@@ -71,7 +83,18 @@ export function useEditableTitle({
         !cancelButtonRef.current.contains(target);
 
       if (isClickOutside) {
-        if (editedTitle !== originalTitle) {
+        const trimmedTitle = editedTitle.trim();
+
+        // If title is empty, show error and revert
+        if (!trimmedTitle) {
+          toast.error("O título não pode ficar em branco");
+          setEditedTitle(originalTitle);
+          setIsEditing(false);
+          return;
+        }
+
+        // If title changed, show save confirmation
+        if (trimmedTitle !== originalTitle) {
           setShowSaveModal(true);
         } else {
           setIsEditing(false);
