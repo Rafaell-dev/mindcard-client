@@ -24,9 +24,12 @@ async function apiFetch<T>(
   path: string,
   options: FetchOptions = {}
 ): Promise<T> {
-  const { body, query, ...rest } = options;
+  const { body, query, headers: customHeaders, ...rest } = options;
 
-  const headers: Record<string, string> = { Accept: "application/json" };
+  const headers: Record<string, string> = {
+    Accept: "application/json",
+    ...(customHeaders as Record<string, string>),
+  };
   let payload: BodyInit | undefined;
 
   // Prepare body
@@ -46,9 +49,9 @@ async function apiFetch<T>(
     credentials: "include",
     ...rest,
     body: payload,
-    headers: { ...headers, ...rest.headers },
+    headers: { ...headers },
   });
-
+  console.log('teste1',res)
   if (!res.ok) {
     const text = await res.text();
     const error = new Error(`API Error: ${res.status}`) as Error & {
