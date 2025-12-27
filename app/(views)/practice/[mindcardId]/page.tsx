@@ -211,7 +211,7 @@ export default function MindcardPage({ params }: MindcardPageProps) {
         </ToggleGroup>
       </section>
 
-      <section className="space-y-2">
+      {/* <section className="space-y-2">
         <Label htmlFor="mindcard-prompt" className="text-base font-bold">
           Prompt personalizado
         </Label>
@@ -222,7 +222,7 @@ export default function MindcardPage({ params }: MindcardPageProps) {
           onChange={(event) => setPrompt(event.target.value)}
           className="input-border min-h-[144px] resize-none rounded-2xl p-4 text-base"
         />
-      </section>
+      </section> */}
 
       <Button
         type="button"
