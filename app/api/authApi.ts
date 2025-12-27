@@ -6,10 +6,8 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 const COOKIE_NAME = "token";
 
 type FetchOptions = {
-  body?: unknown;
-  query?: Record<string, string | number | boolean>;
   headers?: Record<string, string>;
-  skipAuth?: boolean; // Set to true for public endpoints
+  skipAuth?: boolean;
 };
 
 function buildUrl(
@@ -40,9 +38,11 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
 async function authApiFetch<T>(
   path: string,
   method: string,
+  body?: unknown,
+  query?: Record<string, string | number | boolean>,
   options: FetchOptions = {}
 ): Promise<T> {
-  const { body, query, headers: customHeaders, skipAuth = false } = options;
+  const { headers: customHeaders, skipAuth = false } = options;
 
   // Build headers - auto-include auth unless skipAuth is true
   const authHeaders = skipAuth ? {} : await getAuthHeaders();
@@ -95,38 +95,55 @@ async function authApiFetch<T>(
 }
 
 /**
- * Authenticated API client - automatically includes Authorization header
- * Use this for protected routes. For public routes, pass { skipAuth: true }
+ * Authenticated GET request
  */
-export const authApi = {
-  get: <T>(
-    path: string,
-    query?: Record<string, string | number | boolean>,
-    options?: Omit<FetchOptions, "body" | "query">
-  ) => authApiFetch<T>(path, "GET", { ...options, query }),
+export async function authGet<T>(
+  path: string,
+  query?: Record<string, string | number | boolean>,
+  options?: FetchOptions
+): Promise<T> {
+  return authApiFetch<T>(path, "GET", undefined, query, options);
+}
 
-  post: <T>(
-    path: string,
-    body?: unknown,
-    options?: Omit<FetchOptions, "body">
-  ) => authApiFetch<T>(path, "POST", { ...options, body }),
+/**
+ * Authenticated POST request
+ */
+export async function authPost<T>(
+  path: string,
+  body?: unknown,
+  options?: FetchOptions
+): Promise<T> {
+  return authApiFetch<T>(path, "POST", body, undefined, options);
+}
 
-  patch: <T>(
-    path: string,
-    body?: unknown,
-    options?: Omit<FetchOptions, "body">
-  ) => authApiFetch<T>(path, "PATCH", { ...options, body }),
+/**
+ * Authenticated PATCH request
+ */
+export async function authPatch<T>(
+  path: string,
+  body?: unknown,
+  options?: FetchOptions
+): Promise<T> {
+  return authApiFetch<T>(path, "PATCH", body, undefined, options);
+}
 
-  put: <T>(
-    path: string,
-    body?: unknown,
-    options?: Omit<FetchOptions, "body">
-  ) => authApiFetch<T>(path, "PUT", { ...options, body }),
+/**
+ * Authenticated PUT request
+ */
+export async function authPut<T>(
+  path: string,
+  body?: unknown,
+  options?: FetchOptions
+): Promise<T> {
+  return authApiFetch<T>(path, "PUT", body, undefined, options);
+}
 
-  del: <T>(path: string, options?: Omit<FetchOptions, "body">) =>
-    authApiFetch<T>(path, "DELETE", options),
-
-  baseUrl: BASE_URL,
-};
-
-export default authApi;
+/**
+ * Authenticated DELETE request
+ */
+export async function authDelete<T>(
+  path: string,
+  options?: FetchOptions
+): Promise<T> {
+  return authApiFetch<T>(path, "DELETE", undefined, undefined, options);
+}

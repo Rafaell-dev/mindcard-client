@@ -1,6 +1,6 @@
 "use server";
 
-import { authApi } from "@/app/api/authApi";
+import { authGet, authPatch } from "@/app/api/authApi";
 
 export type User = {
   id: string;
@@ -22,7 +22,7 @@ type UserActionState = {
 
 export async function getUser(userId: string): Promise<User | null> {
   try {
-    const user = await authApi.get<User>(`usuario/listar/${userId}`);
+    const user = await authGet<User>(`usuario/listar/${userId}`);
     return user;
   } catch (error: unknown) {
     console.error("Failed to fetch user:", error);
@@ -51,7 +51,7 @@ export async function updateUserAction(
       body.faculdadeId = faculdadeId;
     }
 
-    await authApi.patch(`usuario/atualizar/${userId}`, body);
+    await authPatch(`usuario/atualizar/${userId}`, body);
 
     return { success: true };
   } catch (error: unknown) {
