@@ -13,6 +13,7 @@ export type User = {
   sequenciaAtual: number;
   sequenciaRecorde: number;
   faculdadeNome?: string;
+  onboardingCompleto?: boolean;
 };
 
 type UserActionState = {

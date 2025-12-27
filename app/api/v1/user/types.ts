@@ -9,6 +9,7 @@ export type User = {
   xpTotal: number;
   sequenciaAtual: number;
   sequenciaRecorde: number;
+  onboardingCompleto?: boolean;
 };
 
 export type UpdateUserData = {
