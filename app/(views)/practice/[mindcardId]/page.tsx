@@ -22,6 +22,7 @@ import { FileUploadSection } from "./components/FileUploadSection";
 import { PageRangeSection } from "./components/PageRangeSection";
 import { CardsSection } from "./components/CardsSection";
 import { SaveTitleModal } from "./components/SaveTitleModal";
+import { UploadSourceModal } from "./components/UploadSourceModal";
 
 type MindcardPageProps = {
   params: Promise<{
@@ -51,6 +52,7 @@ export default function MindcardPage({ params }: MindcardPageProps) {
   const [startPage, setStartPage] = useState(1);
   const [endPage, setEndPage] = useState(1);
   const [pageRangeError, setPageRangeError] = useState<string | null>(null);
+  const [showUploadModal, setShowUploadModal] = useState(false);
 
   // Custom hooks
   const {
@@ -99,6 +101,15 @@ export default function MindcardPage({ params }: MindcardPageProps) {
     handleRemoveFile,
     openFilePicker,
   } = useFileUpload();
+
+  // Show upload modal automatically in creation mode when no file is uploaded
+  useEffect(() => {
+    if (isCreationMode && !uploadedFile) {
+      setShowUploadModal(true);
+    } else {
+      setShowUploadModal(false);
+    }
+  }, [isCreationMode, uploadedFile]);
 
   // Reset page range when file changes
   useEffect(() => {
@@ -273,25 +284,24 @@ export default function MindcardPage({ params }: MindcardPageProps) {
         />
       </section> */}
 
-      <Button
-        type="button"
-        onClick={handleGenerateCards}
-        disabled={loading}
-        className="flex w-full items-center justify-center gap-2 rounded-full text-base font-bold text-foreground secondary-border"
-        size="xl"
-      >
-        <Image
-          src="/icons/refresh.svg"
-          alt="Refresh icon"
-          width={16}
-          height={16}
-        />
-        {loading
-          ? "Criando..."
-          : isCreationMode
-          ? "Criar Mindcard"
-          : "Gerar novos cards"}
-      </Button>
+      {/* Show "Gerar novos" button only in edit mode */}
+      {!isCreationMode && (
+        <Button
+          type="button"
+          onClick={handleGenerateCards}
+          disabled={loading}
+          className="flex w-full items-center justify-center gap-2 rounded-full text-base font-bold text-foreground secondary-border"
+          size="xl"
+        >
+          <Image
+            src="/icons/refresh.svg"
+            alt="Refresh icon"
+            width={16}
+            height={16}
+          />
+          {loading ? "Gerando..." : "Gerar novos"}
+        </Button>
+      )}
 
       <CardsSection
         cards={cards}
@@ -301,17 +311,24 @@ export default function MindcardPage({ params }: MindcardPageProps) {
 
       <div className="pointer-events-none fixed inset-x-0 bottom-0 bg-gradient-to-t from-background via-background/95 to-transparent pb-6 pt-16">
         <div className="pointer-events-auto mx-auto w-full max-w-md px-4 sm:px-6">
-          <Button
-            className={cn(
-              "w-full rounded-full text-base font-bold",
-              !isCreationMode && "bg-primary primary-border"
-            )}
-            size="lg"
-            disabled={isCreationMode}
-            onClick={() => router.push(`/practice/${mindcardSlug}/play`)}
-          >
-            Praticar
-          </Button>
+          {isCreationMode ? (
+            <Button
+              className="w-full rounded-full text-base font-bold bg-primary primary-border"
+              size="lg"
+              disabled={loading || !uploadedFile}
+              onClick={handleGenerateCards}
+            >
+              {loading ? "Gerando..." : "Gerar Mindcards"}
+            </Button>
+          ) : (
+            <Button
+              className="w-full rounded-full text-base font-bold bg-primary primary-border"
+              size="lg"
+              onClick={() => router.push(`/practice/${mindcardSlug}/play`)}
+            >
+              Praticar
+            </Button>
+          )}
         </div>
       </div>
 
@@ -324,6 +341,13 @@ export default function MindcardPage({ params }: MindcardPageProps) {
           cancelEdit();
         }}
         loading={loading}
+      />
+
+      <UploadSourceModal
+        isOpen={showUploadModal}
+        uploadedFile={uploadedFile}
+        onFileChange={handleFileChange}
+        onCancel={() => router.push("/mindcards")}
       />
     </div>
   );
