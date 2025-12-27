@@ -1,8 +1,12 @@
 "use server";
 
 import { cache } from "react";
-import { apiGet, apiPatch } from "../../index";
+import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { apiGet, apiPatch, apiDel } from "../../index";
 import { User } from "./types";
+import { ENV } from "@/app/config/env";
 
 type UserActionState = {
   success?: boolean;
@@ -49,9 +53,31 @@ export async function updateUserAction(
 
     await apiPatch(`usuario/atualizar/${userId}`, body);
 
+    revalidatePath("/profile");
+
     return { success: true };
   } catch (error: unknown) {
     const err = error as Error;
     return { error: err.message || "FAILED_TO_UPDATE" };
+  }
+}
+
+export async function deleteUserAction(
+  userId: string
+): Promise<UserActionState> {
+  try {
+    await apiDel(`usuario/deletar/${userId}`);
+
+    const cookieStore = await cookies();
+    cookieStore.delete(ENV.COOKIE_NAME);
+
+    redirect("/login");
+  } catch (error: unknown) {
+    if ((error as Error).message === "NEXT_REDIRECT") {
+      throw error;
+    }
+
+    const err = error as Error;
+    return { error: err.message || "FAILED_TO_DELETE" };
   }
 }

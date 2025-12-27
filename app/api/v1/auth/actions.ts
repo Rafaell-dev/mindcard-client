@@ -92,5 +92,5 @@ export async function googleAuthCallbackAction(token: string) {
     maxAge: COOKIE_DURATION,
     path: "/",
   });
-  redirect("/");
+  redirect("/mindcards");
 }

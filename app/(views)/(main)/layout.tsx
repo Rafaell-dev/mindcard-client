@@ -19,7 +19,7 @@ export default async function MindcardLayout({
 
   return (
     <OnboardingWrapper onboardingCompleto={onboardingCompleto}>
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen mx-auto w-full px-4 pb-28 pt-8 sm:px-6">
         {children}
         <FloatingNavbar />
       </div>

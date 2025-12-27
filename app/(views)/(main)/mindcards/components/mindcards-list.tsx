@@ -127,7 +127,7 @@ export function MindcardsList({ initialMindcards }: MindcardsListProps) {
   }, [initialMindcards, searchQuery]);
 
   return (
-    <div className="mx-auto flex flex-col w-full gap-10 px-4 pb-24 pt-8 sm:px-6 lg:px-8">
+    <div className="mx-auto flex flex-col w-full gap-10">
       <PracticeHeader
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
