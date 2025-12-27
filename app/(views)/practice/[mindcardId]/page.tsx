@@ -19,6 +19,7 @@ import { useFileUpload } from "./hooks/useFileUpload";
 // Components
 import { MindcardHeader } from "./components/MindcardHeader";
 import { FileUploadSection } from "./components/FileUploadSection";
+import { PageRangeSection } from "./components/PageRangeSection";
 import { CardsSection } from "./components/CardsSection";
 import { SaveTitleModal } from "./components/SaveTitleModal";
 
@@ -47,6 +48,9 @@ export default function MindcardPage({ params }: MindcardPageProps) {
     "ALTERNATIVA",
     "MULTIPLA_ESCOLHA",
   ]);
+  const [startPage, setStartPage] = useState(1);
+  const [endPage, setEndPage] = useState(1);
+  const [pageRangeError, setPageRangeError] = useState<string | null>(null);
 
   // Custom hooks
   const {
@@ -89,11 +93,47 @@ export default function MindcardPage({ params }: MindcardPageProps) {
   const {
     uploadedFile,
     sourceFileName: uploadSourceFileName,
+    totalPages,
     fileInputRef,
     handleFileChange,
     handleRemoveFile,
     openFilePicker,
   } = useFileUpload();
+
+  // Reset page range when file changes
+  useEffect(() => {
+    if (totalPages) {
+      setStartPage(1);
+      setEndPage(totalPages);
+      setPageRangeError(null);
+    }
+  }, [totalPages]);
+
+  // Validate page range
+  const validatePageRange = (start: number, end: number): string | null => {
+    if (start < 1) {
+      return "A página inicial não pode ser menor que 1.";
+    }
+    if (totalPages && end > totalPages) {
+      return `A página final não pode ultrapassar ${totalPages}.`;
+    }
+    if (end < start) {
+      return "A página final não pode ser menor que a página inicial.";
+    }
+    return null;
+  };
+
+  const handleStartPageChange = (value: number) => {
+    setStartPage(value);
+    const error = validatePageRange(value, endPage);
+    setPageRangeError(error);
+  };
+
+  const handleEndPageChange = (value: number) => {
+    setEndPage(value);
+    const error = validatePageRange(startPage, value);
+    setPageRangeError(error);
+  };
 
   // Use uploaded file name or existing source file name
   const displaySourceFileName = uploadedFile
@@ -173,6 +213,15 @@ export default function MindcardPage({ params }: MindcardPageProps) {
         onFileChange={handleFileChange}
         onRemoveFile={handleRemoveFile}
         onFilePicker={openFilePicker}
+      />
+
+      <PageRangeSection
+        startPage={startPage}
+        endPage={endPage}
+        totalPages={totalPages}
+        onStartPageChange={handleStartPageChange}
+        onEndPageChange={handleEndPageChange}
+        error={pageRangeError}
       />
 
       <section className="space-y-2">
