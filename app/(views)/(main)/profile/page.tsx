@@ -1,19 +1,20 @@
 import Image from "next/image";
-import { getUser } from "@/app/api/v1/user/route";
+import { redirect } from "next/navigation";
+import { getUser } from "@/app/actions/user";
+import { getCurrentUserId } from "@/app/lib/session";
 import { ProfileForm } from "./components/profile-form";
 
-type ProfilePageProps = {
-  searchParams: Promise<{ userId?: string }>;
-};
+export default async function ProfilePage() {
+  const userId = await getCurrentUserId();
 
-export default async function ProfilePage({ searchParams }: ProfilePageProps) {
-  const params = await searchParams;
-  const userId = params.userId || "ff9ff165-557f-427f-8c5b-aa1e52453003";
+  if (!userId) {
+    redirect("/login");
+  }
 
   const user = await getUser(userId);
 
-  const userName = user?.nome.split(" ")[0] || "Usuário";
-  const userHandle = user?.email.split("@")[0] || "user";
+  const userName = user?.nome || "Usuário";
+  const userHandle = user?.usuario || "user";
   const memberSince = user?.dataRegistro
     ? new Date(user.dataRegistro).getFullYear()
     : new Date().getFullYear();

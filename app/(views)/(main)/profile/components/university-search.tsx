@@ -17,19 +17,28 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/app/components/ui/popover";
-import { searchUniversities, University } from "@/app/api/v1/university/route";
+import { searchUniversities } from "@/app/api/v1/university/route";
+
+type University = {
+  id: string;
+  nome: string;
+  sigla: string;
+  uf: string;
+};
 
 export function UniversitySearch({
-  value,
-  onChange,
+  defaultValue,
   disabled,
 }: {
-  value: string;
-  onChange: (value: string, id?: string) => void;
+  defaultValue?: string;
   disabled?: boolean;
 }) {
   const [open, setOpen] = React.useState(false);
-  const [searchTerm, setSearchTerm] = React.useState(value);
+  const [value, setValue] = React.useState(defaultValue || "");
+  const [selectedId, setSelectedId] = React.useState<string | undefined>(
+    undefined
+  );
+  const [searchTerm, setSearchTerm] = React.useState(defaultValue || "");
   const [results, setResults] = React.useState<University[]>([]);
   const [loading, setLoading] = React.useState(false);
 
@@ -55,74 +64,83 @@ export function UniversitySearch({
   }, [searchTerm]);
 
   const handleSelect = (uni: University) => {
+    setValue(uni.nome);
+    setSelectedId(uni.id);
     setSearchTerm(uni.nome);
-    onChange(uni.nome, uni.id);
     setOpen(false);
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-full justify-between h-12 rounded-2xl px-4 text-base font-normal font-sans input-border hover:bg-background hover:text-foreground"
-          disabled={disabled}
+    <>
+      {/* Hidden input for form submission */}
+      {selectedId && (
+        <input type="hidden" name="faculdadeId" value={selectedId} />
+      )}
+
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="w-full justify-between h-12 rounded-2xl px-4 text-base font-normal font-sans input-border hover:bg-background hover:text-foreground"
+            disabled={disabled}
+          >
+            {value ? value : "Selecione a faculdade..."}
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent
+          className="w-[var(--radix-popover-trigger-width)] p-0"
+          align="start"
         >
-          {value ? value : "Selecione a faculdade..."}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        className="w-[var(--radix-popover-trigger-width)] p-0"
-        align="start"
-      >
-        <Command shouldFilter={false}>
-          <CommandInput
-            placeholder="Digite o nome da faculdade..."
-            value={searchTerm}
-            onValueChange={(val) => {
-              setSearchTerm(val);
-              onChange(val, undefined);
-            }}
-          />
-          <CommandList>
-            {loading && (
-              <div className="py-6 text-center text-sm text-muted-foreground">
-                <Loader2 className="mx-auto h-4 w-4 animate-spin" />
-              </div>
-            )}
-            {!loading && results.length === 0 && searchTerm.length >= 3 && (
-              <CommandEmpty>Nenhuma faculdade encontrada.</CommandEmpty>
-            )}
-            {!loading && results.length > 0 && (
-              <CommandGroup>
-                {results.map((uni) => (
-                  <CommandItem
-                    key={uni.id}
-                    value={uni.nome}
-                    onSelect={() => handleSelect(uni)}
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        value === uni.nome ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                    <div className="flex flex-col">
-                      <span>{uni.nome}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {uni.sigla} - {uni.uf}
-                      </span>
-                    </div>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            )}
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+          <Command shouldFilter={false}>
+            <CommandInput
+              placeholder="Digite o nome da faculdade..."
+              value={searchTerm}
+              onValueChange={(val) => {
+                setSearchTerm(val);
+                setValue(val);
+                setSelectedId(undefined);
+              }}
+            />
+            <CommandList>
+              {loading && (
+                <div className="py-6 text-center text-sm text-muted-foreground">
+                  <Loader2 className="mx-auto h-4 w-4 animate-spin" />
+                </div>
+              )}
+              {!loading && results.length === 0 && searchTerm.length >= 3 && (
+                <CommandEmpty>Nenhuma faculdade encontrada.</CommandEmpty>
+              )}
+              {!loading && results.length > 0 && (
+                <CommandGroup>
+                  {results.map((uni) => (
+                    <CommandItem
+                      key={uni.id}
+                      value={uni.nome}
+                      onSelect={() => handleSelect(uni)}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          value === uni.nome ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      <div className="flex flex-col">
+                        <span>{uni.nome}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {uni.sigla} - {uni.uf}
+                        </span>
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </>
   );
 }

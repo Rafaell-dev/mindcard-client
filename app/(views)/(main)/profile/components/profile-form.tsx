@@ -1,78 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useEffect } from "react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
-import { cn } from "@/app/lib/utils";
-import type { User } from "@/app/api/v1/user/types";
+import type { User } from "@/app/actions/user";
+import { updateUserAction } from "@/app/actions/user";
 import { toast } from "sonner";
-import { updateUser } from "@/app/api/v1/user/route";
 import { UniversitySearch } from "./university-search";
 
 type ProfileFormProps = {
-  user: User;
+  user: User | null;
   userId: string;
 };
 
-type ProfileFormData = {
-  nome: string;
-  faculdade: string;
-  faculdadeId?: string;
-  email: string;
-  idioma: string;
-};
-
 export function ProfileForm({ user, userId }: ProfileFormProps) {
-  const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState<ProfileFormData>({
-    nome: user.nome,
-    faculdade: user.faculdadeNome,
-    faculdadeId: undefined,
-    email: user.email,
-    idioma: user.idioma,
-  });
+  const [state, formAction, isPending] = useActionState(updateUserAction, {});
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!form.nome || !form.email || !form.faculdade) {
-      toast.error("Por favor, preencha todos os campos obrigatórios.");
-      return;
-    }
-
-    try {
-      setSaving(true);
-
-      const formData = new FormData();
-      formData.append("userId", userId);
-      formData.append("nome", form.nome);
-      // Only send faculdadeId if it exists (user selected from list)
-      if (form.faculdadeId) {
-        formData.append("faculdadeId", form.faculdadeId);
-      }
-      formData.append("email", form.email);
-      formData.append("idioma", form.idioma);
-
-      await updateUser(formData);
+  useEffect(() => {
+    if (state.success) {
       toast.success("Perfil salvo com sucesso!");
-    } catch (err) {
-      console.error("Failed to save profile:", err);
+    } else if (state.error) {
       toast.error("Falha ao salvar perfil. Por favor, tente novamente.");
-    } finally {
-      setSaving(false);
     }
-  };
+  }, [state]);
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto w-full space-y-6">
+    <form action={formAction} className="mx-auto w-full space-y-6">
+      <input type="hidden" name="userId" value={userId} />
+
       <div className="space-y-2">
         <Label htmlFor="nome" className="text-base font-bold">
           Nome <span className="text-red-500">*</span>
@@ -80,11 +36,10 @@ export function ProfileForm({ user, userId }: ProfileFormProps) {
         <Input
           id="nome"
           name="nome"
-          value={form.nome}
-          onChange={handleChange}
+          defaultValue={user?.nome || ""}
           className="input-border h-12 rounded-2xl px-4"
           placeholder="Seu nome completo"
-          disabled={saving}
+          disabled={isPending}
         />
       </div>
 
@@ -93,11 +48,8 @@ export function ProfileForm({ user, userId }: ProfileFormProps) {
           Faculdade <span className="text-red-500">*</span>
         </Label>
         <UniversitySearch
-          value={form.faculdade}
-          onChange={(value, id) =>
-            setForm((prev) => ({ ...prev, faculdade: value, faculdadeId: id }))
-          }
-          disabled={saving}
+          defaultValue={user?.faculdadeNome || ""}
+          disabled={isPending}
         />
       </div>
 
@@ -109,49 +61,23 @@ export function ProfileForm({ user, userId }: ProfileFormProps) {
           id="email"
           name="email"
           type="email"
-          value={form.email}
-          onChange={handleChange}
+          defaultValue={user?.email || ""}
           className="input-border h-12 rounded-2xl px-4"
           placeholder="seu@email.com"
-          disabled={saving}
+          disabled={isPending}
         />
       </div>
 
-      {/* <div className="space-y-2">
-        <Label htmlFor="idioma" className="text-base font-bold">
-          Idioma
-        </Label>
-        <div className="relative">
-          <select
-            id="idioma"
-            name="idioma"
-            value={form.idioma}
-            onChange={handleChange}
-            disabled={saving}
-            className={cn(
-              "input-border h-12 w-full appearance-none rounded-2xl bg-background px-4 text-base",
-              "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-              saving && "opacity-50 cursor-not-allowed"
-            )}
-          >
-            <option value="pt-BR">Português (PT-BR)</option>
-            <option value="en-US">Inglês (EN-US)</option>
-            <option value="es-ES">Espanhol (ES-ES)</option>
-          </select>
-          <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-foreground/70">
-            ▾
-          </span>
-        </div>
-      </div> */}
+      <input type="hidden" name="idioma" value={user?.idioma || "pt-BR"} />
 
       <div className="pt-2">
         <Button
           type="submit"
           className="w-full rounded-full primary-border"
           size="lg"
-          disabled={saving}
+          disabled={isPending}
         >
-          {saving ? "Salvando..." : "Salvar alterações"}
+          {isPending ? "Salvando..." : "Salvar alterações"}
         </Button>
       </div>
     </form>

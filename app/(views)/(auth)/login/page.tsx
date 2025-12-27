@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, Suspense } from "react";
 import { loginAction } from "@/app/actions/auth";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -14,15 +14,17 @@ import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import Link from "next/link";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export default function LoginPage() {
+function LoginForm() {
   const [state, formAction, isPending] = useActionState(loginAction, {});
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect") || "/";
 
   useEffect(() => {
     if (state.success) {
-      router.push("/");
+      router.push(redirectUrl);
     } else if (state.error === "NOT_FOUND") {
       router.push("/no-account");
     } else if (state.error) {
@@ -30,7 +32,7 @@ export default function LoginPage() {
         description: "Verifique suas credenciais e tente novamente.",
       });
     }
-  }, [state, router]);
+  }, [state, router, redirectUrl]);
 
   return (
     <Card className="mx-auto max-w-sm">
@@ -141,5 +143,19 @@ export default function LoginPage() {
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          Carregando...
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

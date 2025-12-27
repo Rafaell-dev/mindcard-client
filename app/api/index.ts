@@ -51,7 +51,6 @@ async function apiFetch<T>(
     body: payload,
     headers: { ...headers },
   });
-  console.log('teste1',res)
   if (!res.ok) {
     const text = await res.text();
     const error = new Error(`API Error: ${res.status}`) as Error & {
@@ -73,16 +72,20 @@ async function apiFetch<T>(
 }
 
 export const api = {
-  get: <T>(path: string, query?: Record<string, string | number | boolean>) =>
-    apiFetch<T>(path, { method: "GET", query }),
+  get: <T>(
+    path: string,
+    query?: Record<string, string | number | boolean>,
+    headers?: Record<string, string>
+  ) => apiFetch<T>(path, { method: "GET", query, headers }),
 
-  post: <T>(path: string, body?: unknown) =>
-    apiFetch<T>(path, { method: "POST", body }),
+  post: <T>(path: string, body?: unknown, headers?: Record<string, string>) =>
+    apiFetch<T>(path, { method: "POST", body, headers }),
 
-  patch: <T>(path: string, body?: unknown) =>
-    apiFetch<T>(path, { method: "PATCH", body }),
+  patch: <T>(path: string, body?: unknown, headers?: Record<string, string>) =>
+    apiFetch<T>(path, { method: "PATCH", body, headers }),
 
-  del: <T>(path: string) => apiFetch<T>(path, { method: "DELETE" }),
+  del: <T>(path: string, headers?: Record<string, string>) =>
+    apiFetch<T>(path, { method: "DELETE", headers }),
 
   baseUrl: BASE_URL,
 };
