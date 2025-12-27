@@ -1,8 +1,7 @@
 "use server";
 
 import { cache } from "react";
-import api from "../../index";
-import { authPost, authGet } from "../../authApi";
+import { apiGet, apiPost } from "../../index";
 import type {
   PerguntaOnboarding,
   SalvarRespostasRequest,
@@ -14,8 +13,15 @@ import type {
  * Endpoint público - não requer autenticação
  */
 export const getPerguntas = cache(async (): Promise<PerguntaOnboarding[]> => {
-  const perguntas = await api.get<PerguntaOnboarding[]>("onboarding/perguntas");
-  return perguntas;
+  try {
+    const perguntas = await apiGet<PerguntaOnboarding[]>(
+      "onboarding/perguntas"
+    );
+    return perguntas;
+  } catch (error) {
+    console.error("Failed to fetch onboarding questions:", error);
+    return [];
+  }
 });
 
 /**
@@ -25,14 +31,26 @@ export const getPerguntas = cache(async (): Promise<PerguntaOnboarding[]> => {
 export async function salvarRespostas(
   request: SalvarRespostasRequest
 ): Promise<void> {
-  await authPost("onboarding/responder", request);
+  try {
+    await apiPost("onboarding/responder", request);
+  } catch (error) {
+    console.error("Failed to save onboarding responses:", error);
+    throw error;
+  }
 }
 
 /**
  * Busca o status de conclusão do onboarding do usuário
  * Endpoint protegido - requer autenticação
  */
-export async function getOnboardingStatus(): Promise<OnboardingStatus> {
-  const status = await authGet<OnboardingStatus>("onboarding/status");
-  return status;
-}
+export const getOnboardingStatus = cache(
+  async (): Promise<OnboardingStatus | null> => {
+    try {
+      const status = await apiGet<OnboardingStatus>("onboarding/status");
+      return status;
+    } catch (error) {
+      console.error("Failed to fetch onboarding status:", error);
+      return null;
+    }
+  }
+);

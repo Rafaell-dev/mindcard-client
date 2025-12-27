@@ -1,8 +1,9 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { ENV } from "../config/env";
 
-const COOKIE_NAME = "token";
+const COOKIE_NAME = ENV.COOKIE_NAME;
 
 export type Session = {
   userId: string;

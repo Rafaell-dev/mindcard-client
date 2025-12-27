@@ -9,8 +9,8 @@ import {
   getMindcardById,
   createMindcard,
   updateMindcard,
-} from "@/app/api/v1/mindcard/route";
-import { getMindcardItemsByMindcardId } from "@/app/api/v1/mindcard-item/route";
+} from "@/app/api/v1/mindcard/actions";
+import { getMindcardItemsByMindcardId } from "@/app/api/v1/mindcard-item/actions";
 import { getFilenameFromUrl } from "../lib/utils";
 
 interface UseMindcardProps {

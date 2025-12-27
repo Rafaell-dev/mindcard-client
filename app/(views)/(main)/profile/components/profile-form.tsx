@@ -4,8 +4,8 @@ import { useActionState, useEffect } from "react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
-import type { User } from "@/app/actions/user";
-import { updateUserAction } from "@/app/actions/user";
+import type { User } from "@/app/api/v1/user/types";
+import { updateUserAction } from "@/app/api/v1/user/actions";
 import { toast } from "sonner";
 import { UniversitySearch } from "./university-search";
 

@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 
 import { cn } from "@/app/lib/utils";
-import Image from "next/image";
 
 type MindcardCardProps = {
   title: string;

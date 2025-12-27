@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { ENV } from "./app/config/env";
 
-const COOKIE_NAME = "token";
+const COOKIE_NAME = ENV.COOKIE_NAME;
 
 // Routes that don't require authentication
 const publicRoutes = [

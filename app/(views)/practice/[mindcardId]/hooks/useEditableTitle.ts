@@ -12,8 +12,8 @@ interface UseEditableTitleProps {
 interface UseEditableTitleReturn {
   isEditing: boolean;
   editedTitle: string;
-  titleInputRef: React.RefObject<HTMLInputElement>;
-  cancelButtonRef: React.RefObject<HTMLButtonElement>;
+  titleInputRef: React.RefObject<HTMLInputElement | null>;
+  cancelButtonRef: React.RefObject<HTMLButtonElement | null>;
   showSaveModal: boolean;
   setShowSaveModal: (show: boolean) => void;
   setEditedTitle: (title: string) => void;

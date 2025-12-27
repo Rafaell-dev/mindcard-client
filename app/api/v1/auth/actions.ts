@@ -2,10 +2,11 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import api from "@/app/api";
+import { apiPost } from "../../index";
+import { ENV } from "@/app/config/env";
 
-const COOKIE_NAME = "token";
-const COOKIE_DURATION = 60 * 60 * 24 * 7; // 7 days
+const COOKIE_NAME = ENV.COOKIE_NAME;
+const COOKIE_DURATION = ENV.COOKIE_DURATION;
 
 type AuthState = {
   success?: boolean;
@@ -20,7 +21,7 @@ export async function loginAction(
   const password = formData.get("password") as string;
 
   try {
-    const res = await api.post<{ accessToken: string; user: unknown }>(
+    const res = await apiPost<{ accessToken: string; user: unknown }>(
       "auth/login",
       { email, senha: password }
     );
@@ -51,14 +52,14 @@ export async function registerAction(
 
   try {
     // 1. Create the account
-    await api.post("usuario/cadastrar", {
+    await apiPost("usuario/cadastrar", {
       email,
       senha: password,
       idioma: "PT_BR",
     });
 
     // 2. Automatically login after registration
-    const res = await api.post<{ accessToken: string; user: unknown }>(
+    const res = await apiPost<{ accessToken: string; user: unknown }>(
       "auth/login",
       { email, senha: password }
     );

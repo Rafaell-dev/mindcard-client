@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { redirect } from "next/navigation";
-import { getUser } from "@/app/actions/user";
+import { getUser } from "@/app/api/v1/user/actions";
 import { getCurrentUserId } from "@/app/lib/session";
 import { ProfileForm } from "./components/profile-form";
 

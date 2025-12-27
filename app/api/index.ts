@@ -1,9 +1,16 @@
+"use server";
+
+import { cookies } from "next/headers";
+import { ENV } from "../config/env";
+
+const BASE_URL = ENV.API_BASE_URL;
+const COOKIE_NAME = ENV.COOKIE_NAME;
+
 type FetchOptions = Omit<RequestInit, "body"> & {
   body?: unknown;
   query?: Record<string, string | number | boolean>;
+  skipAuth?: boolean;
 };
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 function buildUrl(
   path: string,
@@ -20,16 +27,36 @@ function buildUrl(
   return url.toString();
 }
 
+async function getAuthHeaders(): Promise<Record<string, string>> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(COOKIE_NAME)?.value;
+
+  if (token) {
+    return { Authorization: `Bearer ${token}` };
+  }
+  return {};
+}
+
 async function apiFetch<T>(
   path: string,
   options: FetchOptions = {}
 ): Promise<T> {
-  const { body, query, headers: customHeaders, ...rest } = options;
+  const {
+    body,
+    query,
+    headers: customHeaders,
+    skipAuth = false,
+    ...rest
+  } = options;
+
+  const authHeaders = skipAuth ? {} : await getAuthHeaders();
 
   const headers: Record<string, string> = {
     Accept: "application/json",
+    ...authHeaders,
     ...(customHeaders as Record<string, string>),
   };
+
   let payload: BodyInit | undefined;
 
   // Prepare body
@@ -49,8 +76,9 @@ async function apiFetch<T>(
     credentials: "include",
     ...rest,
     body: payload,
-    headers: { ...headers },
+    headers,
   });
+  console.log(res);
   if (!res.ok) {
     const text = await res.text();
     const error = new Error(`API Error: ${res.status}`) as Error & {
@@ -71,23 +99,39 @@ async function apiFetch<T>(
   return text as unknown as T;
 }
 
-export const api = {
-  get: <T>(
-    path: string,
-    query?: Record<string, string | number | boolean>,
-    headers?: Record<string, string>
-  ) => apiFetch<T>(path, { method: "GET", query, headers }),
+/**
+ * Generic API Client - Server Actions
+ * Note: By default this now includes auth headers if available in standard server actions context.
+ * These are exported as individual async functions to comply with "use server" requirements.
+ */
 
-  post: <T>(path: string, body?: unknown, headers?: Record<string, string>) =>
-    apiFetch<T>(path, { method: "POST", body, headers }),
+export async function apiGet<T>(
+  path: string,
+  query?: Record<string, string | number | boolean>,
+  headers?: Record<string, string>
+): Promise<T> {
+  return apiFetch<T>(path, { method: "GET", query, headers });
+}
 
-  patch: <T>(path: string, body?: unknown, headers?: Record<string, string>) =>
-    apiFetch<T>(path, { method: "PATCH", body, headers }),
+export async function apiPost<T>(
+  path: string,
+  body?: unknown,
+  headers?: Record<string, string>
+): Promise<T> {
+  return apiFetch<T>(path, { method: "POST", body, headers });
+}
 
-  del: <T>(path: string, headers?: Record<string, string>) =>
-    apiFetch<T>(path, { method: "DELETE", headers }),
+export async function apiPatch<T>(
+  path: string,
+  body?: unknown,
+  headers?: Record<string, string>
+): Promise<T> {
+  return apiFetch<T>(path, { method: "PATCH", body, headers });
+}
 
-  baseUrl: BASE_URL,
-};
-
-export default api;
+export async function apiDel<T>(
+  path: string,
+  headers?: Record<string, string>
+): Promise<T> {
+  return apiFetch<T>(path, { method: "DELETE", headers });
+}

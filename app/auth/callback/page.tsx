@@ -1,6 +1,6 @@
 "use client";
 
-import { googleAuthCallbackAction } from "@/app/actions/auth";
+import { googleAuthCallbackAction } from "@/app/api/v1/auth/actions";
 import { useSearchParams } from "next/navigation";
 import { useEffect, Suspense } from "react";
 

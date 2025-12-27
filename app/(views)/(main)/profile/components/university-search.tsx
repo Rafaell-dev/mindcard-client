@@ -17,7 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/app/components/ui/popover";
-import { searchUniversities } from "@/app/api/v1/university/route";
+import { searchUniversities } from "@/app/api/v1/university/actions";
 
 type University = {
   id: string;

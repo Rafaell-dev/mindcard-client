@@ -7,7 +7,7 @@ import { QuestionCard } from "@/app/components/practice/question-cards/question-
 import { cn } from "@/app/lib/utils";
 import { X } from "lucide-react";
 import Image from "next/image";
-import { getMindcardItemsByMindcardId } from "@/app/api/v1/mindcard-item/route";
+import { getMindcardItemsByMindcardId } from "@/app/api/v1/mindcard-item/actions";
 import type { MindcardItem } from "@/app/api/v1/mindcard-item/types";
 import { PracticeResults } from "./components/practice-results";
 

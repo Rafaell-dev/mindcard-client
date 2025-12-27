@@ -1,7 +1,7 @@
 import { FloatingNavbar } from "@/app/components/common/floating-navbar";
 import { OnboardingWrapper } from "@/app/components/onboarding";
 import { getSession } from "@/app/lib/session";
-import { getUser } from "@/app/actions/user";
+import { getUser } from "@/app/api/v1/user/actions";
 import type { ReactNode } from "react";
 
 export default async function MindcardLayout({

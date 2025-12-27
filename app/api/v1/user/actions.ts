@@ -1,36 +1,31 @@
 "use server";
 
-import { authGet, authPatch } from "@/app/api/authApi";
-
-export type User = {
-  id: string;
-  email: string;
-  nome?: string;
-  usuario?: string;
-  idioma: string;
-  dataRegistro: string;
-  xpTotal: number;
-  sequenciaAtual: number;
-  sequenciaRecorde: number;
-  faculdadeNome?: string;
-  onboardingCompleto?: boolean;
-};
+import { cache } from "react";
+import { apiGet, apiPatch } from "../../index";
+import { User } from "./types";
 
 type UserActionState = {
   success?: boolean;
   error?: string;
 };
 
-export async function getUser(userId: string): Promise<User | null> {
+/**
+ * Busca dados do usuário pelo ID
+ * Utiliza cache para evitar múltiplas chamadas
+ */
+export const getUser = cache(async (userId: string): Promise<User | null> => {
   try {
-    const user = await authGet<User>(`usuario/listar/${userId}`);
+    const user = await apiGet<User>(`usuario/listar/${userId}`);
     return user;
   } catch (error: unknown) {
     console.error("Failed to fetch user:", error);
     return null;
   }
-}
+});
 
+/**
+ * Server Action para atualizar dados do usuário
+ */
 export async function updateUserAction(
   prevState: UserActionState,
   formData: FormData
@@ -52,7 +47,7 @@ export async function updateUserAction(
       body.faculdadeId = faculdadeId;
     }
 
-    await authPatch(`usuario/atualizar/${userId}`, body);
+    await apiPatch(`usuario/atualizar/${userId}`, body);
 
     return { success: true };
   } catch (error: unknown) {

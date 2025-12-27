@@ -2,6 +2,7 @@ export type User = {
   id: string;
   email: string;
   nome: string;
+  usuario: string;
   faculdadeId: string;
   faculdadeNome: string;
   idioma: string;
