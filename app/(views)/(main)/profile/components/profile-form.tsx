@@ -77,15 +77,14 @@ export function ProfileForm({ user, userId }: ProfileFormProps) {
             <div className="flex-1 rounded-2xl border bg-muted px-4 py-3 text-sm text-muted-foreground input-border">
               {user?.email}
             </div>
-            <form action={logoutAction}>
-              <Button
-                type="submit"
-                variant="outline"
-                className="h-12 rounded-full input-border"
-              >
-                Sair da conta
-              </Button>
-            </form>
+            <Button
+              type="button"
+              variant="outline"
+              className="h-12 rounded-full input-border"
+              onClick={() => logoutAction()}
+            >
+              Sair da conta
+            </Button>
           </div>
           <input type="hidden" name="email" value={user?.email || ""} />
         </div>

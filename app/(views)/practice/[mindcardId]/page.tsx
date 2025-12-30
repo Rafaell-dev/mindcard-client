@@ -4,7 +4,6 @@ import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/app/components/ui/button";
 import { Label } from "@/app/components/ui/label";
-import { Textarea } from "@/app/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/app/components/ui/toggle-group";
 import { cn } from "@/app/lib/utils";
 import Image from "next/image";
@@ -248,26 +247,48 @@ export default function MindcardPage({ params }: MindcardPageProps) {
             // { type: "ABERTA", label: "Aberta" },
             { type: "ALTERNATIVA", label: "Alternativa" },
             { type: "MULTIPLA_ESCOLHA", label: "Múltipla Escolha" },
-          ].map(({ type, label }) => (
-            <ToggleGroupItem
-              key={type}
-              value={type}
-              aria-label={`Selecionar ${label}`}
-              className={cn(
-                "w-full cursor-pointer rounded-full px-5 py-3 text-sm font-medium transition-all h-14",
-                selectedCardTypes.includes(type)
-                  ? "input-border bg-background"
-                  : "border border-2 border-dashed bg-background"
-              )}
-            >
-              <span className="flex items-center justify-center gap-2">
-                {selectedCardTypes.includes(type) && (
-                  <Check className="h-4 w-4" />
+          ].map(({ type, label }) => {
+            const isSelected = selectedCardTypes.includes(type);
+            return (
+              <ToggleGroupItem
+                key={type}
+                value={type}
+                aria-label={`Selecionar ${label}`}
+                className={cn(
+                  "relative w-full h-auto py-4 px-6 justify-start rounded-2xl text-left transition-all duration-200",
+                  "hover:bg-primary/5 hover:border-primary/50 input-border",
+                  isSelected && [
+                    "bg-primary/10 border-primary",
+                    "ring-2 ring-primary/20",
+                  ]
                 )}
-                {label}
-              </span>
-            </ToggleGroupItem>
-          ))}
+              >
+                <div className="flex items-center gap-4 w-full">
+                  {/* Selection indicator */}
+                  <div
+                    className={cn(
+                      "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200",
+                      isSelected
+                        ? "border-primary bg-primary text-white"
+                        : "border-muted-foreground/30"
+                    )}
+                  >
+                    {isSelected && <Check className="w-4 h-4" />}
+                  </div>
+
+                  {/* Option text */}
+                  <span
+                    className={cn(
+                      "text-base font-medium",
+                      isSelected ? "text-primary" : "text-foreground"
+                    )}
+                  >
+                    {label}
+                  </span>
+                </div>
+              </ToggleGroupItem>
+            );
+          })}
         </ToggleGroup>
       </section>
 
