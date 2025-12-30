@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Dialog,
   DialogContent,
@@ -17,9 +17,9 @@ import type {
   PerguntaOnboarding,
   RespostaOnboarding,
 } from "@/app/api/v1/onboarding/types";
-import {
-  Loader2,
-} from "lucide-react";
+import { TipoResposta } from "@/app/api/v1/onboarding/types";
+import { validateBirthDate } from "./useDateValidation";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/app/lib/utils";
 
@@ -68,15 +68,30 @@ export function OnboardingModal() {
   const isLastStep = currentStep === perguntas.length - 1;
   const isFirstStep = currentStep === 0;
 
-  // Check if current question is answered
-  const isCurrentAnswered = currentPergunta
-    ? respostas.has(currentPergunta.id)
-    : false;
-
   // Check if current question can be skipped
-  const canProceed = currentPergunta
-    ? !currentPergunta.obrigatoria || isCurrentAnswered
-    : false;
+  const canProceed = useMemo(() => {
+    if (!currentPergunta) return false;
+
+    // Se não for obrigatória, pode prosseguir
+    if (!currentPergunta.obrigatoria) return true;
+
+    // Se for obrigatória, precisa ter resposta
+    const resposta = respostas.get(currentPergunta.id);
+    if (!resposta || !resposta.respostaTexto) return false;
+
+    // Validação específica por tipo
+    if (currentPergunta.tipoResposta === TipoResposta.DATA) {
+      const parts = resposta.respostaTexto.split("-");
+      // Formato esperado: YYYY-MM-DD ou YYYY-MM-DD (parcial pode ter menos campos)
+      // O componente DataInput salva como YYYY-MM-DD apenas se o ano tiver 4 dígitos
+      if (parts.length !== 3 || parts[0].length !== 4) return false;
+
+      const { isValid } = validateBirthDate(parts[2], parts[1], parts[0]);
+      return isValid;
+    }
+
+    return true;
+  }, [currentPergunta, respostas]);
 
   // Handle answer change
   const handleRespostaChange = useCallback((resposta: RespostaOnboarding) => {
@@ -219,7 +234,7 @@ export function OnboardingModal() {
                 <Button
                   onClick={handleSubmit}
                   disabled={!canProceed || isSubmitting}
-                  className="flex-1 h-12 rounded-full font-semibold bg-gradient-to-r from-primary to-primary/90 primary-border"
+                  className="flex-1 h-12 rounded-full font-semibold primary-border"
                 >
                   {isSubmitting ? (
                     <>
@@ -227,9 +242,7 @@ export function OnboardingModal() {
                       Salvando...
                     </>
                   ) : (
-                    <>
-                      Concluir
-                    </>
+                    <>Concluir</>
                   )}
                 </Button>
               ) : (
