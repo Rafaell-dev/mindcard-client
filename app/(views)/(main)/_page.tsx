@@ -10,7 +10,7 @@ export default function Home() {
       <HomeHeader />
       <div className="gap-8 pb-28 px-4 sm:px-6 md:px-10">
         <ProgressTracker streakCount={121} />
-          <UserStats />
+        <UserStats />
         <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
           {/* <HomeWeeklySequence /> */}
         </div>

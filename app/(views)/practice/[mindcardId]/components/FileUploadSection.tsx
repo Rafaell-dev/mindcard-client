@@ -9,7 +9,7 @@ import { Upload } from "lucide-react";
 interface FileUploadSectionProps {
   uploadedFile: File | null;
   sourceFileName: string | null;
-  fileInputRef: React.RefObject<HTMLInputElement>;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
   onFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onRemoveFile: () => void;
   onFilePicker: () => void;
@@ -69,26 +69,6 @@ export function FileUploadSection({
             )}
           </div>
         </div>
-        {/* {hasFile && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onRemoveFile();
-            }}
-            className="h-10 w-10 ml-4 hover:-translate-y-1"
-          >
-            <Image
-              src="/icons/trash.svg"
-              alt="Remove File"
-              width={16}
-              height={16}
-            />
-          </Button>
-        )} */}
       </div>
     </section>
   );

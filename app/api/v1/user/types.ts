@@ -2,6 +2,7 @@ export type User = {
   id: string;
   email: string;
   nome: string;
+  usuario: string;
   faculdadeId: string;
   faculdadeNome: string;
   idioma: string;
@@ -9,6 +10,7 @@ export type User = {
   xpTotal: number;
   sequenciaAtual: number;
   sequenciaRecorde: number;
+  onboardingCompleto?: boolean;
 };
 
 export type UpdateUserData = {

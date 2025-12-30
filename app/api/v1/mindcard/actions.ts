@@ -1,12 +1,16 @@
 "use server";
 
 import { cache } from "react";
-import api from "../..";
+import { apiGet, apiPost, apiPatch } from "../../index";
 import { Mindcard, MindcardResponse } from "./types";
 
+/**
+ * Busca mindcards de um usuário específico.
+ * Utiliza cache do React para deduplicação de chamadas.
+ */
 export const getMindcardsByUserId = cache(async (userId: string) => {
   try {
-    const mindcards = await api.get<Mindcard[]>(
+    const mindcards = await apiGet<Mindcard[]>(
       `mindcard/listar_por_usuario/${userId}`
     );
     return mindcards;
@@ -16,9 +20,13 @@ export const getMindcardsByUserId = cache(async (userId: string) => {
   }
 });
 
+/**
+ * Busca um mindcard pelo ID.
+ * Utiliza cache do React para deduplicação de chamadas.
+ */
 export const getMindcardById = cache(async (mindcardId: string) => {
   try {
-    const mindcard = await api.get<Mindcard>(`mindcard/listar/${mindcardId}`);
+    const mindcard = await apiGet<Mindcard>(`mindcard/listar/${mindcardId}`);
     return mindcard;
   } catch (error) {
     console.error("Failed to fetch mindcard:", error);
@@ -26,19 +34,13 @@ export const getMindcardById = cache(async (mindcardId: string) => {
   }
 });
 
+/**
+ * Cria um novo mindcard.
+ * utiliza FormData para envio de arquivos.
+ */
 export const createMindcard = async (formData: FormData) => {
   try {
-    const response = await fetch(`${api.baseUrl}/mindcard/criar`, {
-      method: "POST",
-      body: formData,
-      credentials: "include",
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data: MindcardResponse = await response.json();
+    const data = await apiPost<MindcardResponse>("mindcard/criar", formData);
     return data;
   } catch (error) {
     console.error("Failed to create mindcard:", error);
@@ -46,12 +48,15 @@ export const createMindcard = async (formData: FormData) => {
   }
 };
 
+/**
+ * Atualiza um mindcard existente.
+ */
 export const updateMindcard = async (
   mindcardId: string,
   formData: FormData
 ) => {
   try {
-    const data = await api.patch<MindcardResponse>(
+    const data = await apiPatch<MindcardResponse>(
       `mindcard/atualizar/${mindcardId}`,
       formData
     );

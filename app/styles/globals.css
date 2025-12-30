@@ -73,7 +73,7 @@
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
+  --destructive: #c00021;
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
@@ -111,7 +111,7 @@
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
+  --destructive: #c00021;
   --border: oklch(90.2% 0.005 260);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
@@ -156,7 +156,7 @@
   border: none;
   box-shadow: 0 4px 0 0 var(--primary-border);
   opacity: 1;
-  transition: box-shadow 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .secondary-border {
@@ -164,7 +164,18 @@
   border: none;
   box-shadow: 0 4px 0 0 var(--border);
   opacity: 1;
-  transition: box-shadow 0.2s ease;
+  transition: all 0.2s ease;
+}
+
+.primary-border:disabled,
+.secondary-border:disabled,
+.outline-border:disabled {
+  background-color: var(--muted) !important;
+  box-shadow: 0 4px 0 0 var(--border) !important;
+  color: var(--muted-foreground) !important;
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .input-border {
@@ -179,5 +190,16 @@
 }
 
 .secondary-border:hover {
+  box-shadow: 0 6px 0 0 #D1D5DB;
+}
+
+.outline-border {
+  border: 2px solid var(--border);
+  box-shadow: 0 4px 0 0 var(--border);
+  opacity: 1;
+  transition: box-shadow 0.2s ease;
+}
+
+.outline-border:hover {
   box-shadow: 0 6px 0 0 #D1D5DB;
 }
